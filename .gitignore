@@ -1,0 +1,6 @@
+*.pyc
+/client
+/server
+/sha1_bench
+/NPtcp
+*~
