@@ -1,5 +1,5 @@
 if (format eq 'eps') {
-  set terminal postscript eps enhanced color size width,2 font 'Times'
+  set terminal postscript eps enhanced color size 5.4,2 font 'Times'
   unset key
   gen_title(i) = ''
 } else {
@@ -17,7 +17,6 @@ set grid y linewidth 2
 set border 3
 set tics out nomirror
 
-set lmargin 8.2
 set xtics 2
 set xrange [0:xmax]
 set yrange [0:110]

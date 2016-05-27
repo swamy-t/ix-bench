@@ -1,5 +1,5 @@
 if (format eq 'eps') {
-  set terminal postscript eps enhanced color size 2.5,1.3 font 'Times'
+  set terminal postscript eps enhanced color size 2.5,2 font 'Times'
 } else {
   set terminal pngcairo size 1024,1024 lw 1 font 'Times'
   set output outfile.'.'.format
@@ -15,7 +15,7 @@ set style line 7 dashtype 2 linecolor rgbcolor 'green' pointtype 9
 set style line 8 dashtype 1 linecolor rgbcolor 'red' pointtype 10
 set style line 9 dashtype 2 linecolor rgbcolor 'red' pointtype 11
 set style line 10 linetype 3 lw 3 linecolor rgbcolor 'black'
-set grid y
+set grid y linewidth 2
 set border 3
 set tics out nomirror
 set lmargin 11

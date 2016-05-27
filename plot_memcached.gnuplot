@@ -1,5 +1,5 @@
 if (ARG1 eq 'eps') {
-  set terminal postscript eps enhanced color size 5.4,3.6 font 'Times,18'
+  set terminal postscript eps enhanced color size 5.4,2.6 font 'Times,18'
 } else {
   set terminal png size 1680,1050
   set output 'memcached.'.ARG1
@@ -43,8 +43,8 @@ if (ARG1 eq 'eps') {
   set size 1.2,.2
   unset xlabel
   unset ylabel
-  plot NaN with linespoints linestyle 1 title 'Linux (avg)',\
-       NaN with linespoints linestyle 3 title 'Linux (99^{th} pct)',\
-       NaN with linespoints linestyle 2 title 'IX (avg)',\
-       NaN with linespoints linestyle 4 title 'IX (99^{th} pct)'
+  plot NaN with lines linestyle 1 title 'Linux (avg)',\
+       NaN with lines linestyle 3 title 'Linux (99^{th} pct)',\
+       NaN with lines linestyle 2 title 'IX (avg)',\
+       NaN with lines linestyle 4 title 'IX (99^{th} pct)'
 }

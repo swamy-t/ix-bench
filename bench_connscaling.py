@@ -30,7 +30,7 @@ def bench(server, clients, connections_per_client, port, core_count, ix_channel)
       f = ix_channel.makefile('rb')
       count = 0
       while count < core_count:
-        line = f.readline()
+        line = bench_common.readline_retry(f)
         if 'BEGIN' in line:
           count += 1
       non_idle_cycles = 0
@@ -40,7 +40,7 @@ def bench(server, clients, connections_per_client, port, core_count, ix_channel)
       count = 0
       llc = []
       while count < core_count:
-        line = f.readline()
+        line = bench_common.readline_retry(f)
         if 'BEGIN' in line:
           count += 1
           m = kstats_re.match(line)
@@ -48,7 +48,10 @@ def bench(server, clients, connections_per_client, port, core_count, ix_channel)
           llc_load_misses += int(m.group('llc_load_misses'))
           pkts += int(m.group('pkts'))
           avg_batch += int(m.group('avg_batch'))
-      print '%f (%f,%f,%f,%f,%f,%f) %f' % (1.0 * non_idle_cycles / pkts, 1.0 * llc_load_misses / pkts, 1.0 * llc_load_misses2 / pkts, 1.0 * llc_load_misses3 / pkts, 1.0 * llc_load_misses4 / pkts, 1.0 * llc_load_misses5 / pkts, 1.0 * llc_load_misses6 / pkts, 1.0 * avg_batch / core_count)
+      if pkts == 0:
+        print '0 0 0'
+      else:
+        print '%f %f %f' % (1.0 * non_idle_cycles / pkts, 1.0 * llc_load_misses / pkts, 1.0 * avg_batch / core_count)
       while True:
         try:
           f.readline()
@@ -59,7 +62,7 @@ def main():
   parser = argparse.ArgumentParser()
   parser.add_argument('--target', choices=['linux', 'ix'], required=True)
   parser.add_argument('--ix')
-  parser.add_argument('--kstats')
+  parser.add_argument('--kstats', action='store_true')
   parser.add_argument('server')
   parser.add_argument('client', nargs='+')
   args = parser.parse_args()

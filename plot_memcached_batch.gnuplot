@@ -1,5 +1,5 @@
 if (ARG1 eq 'eps') {
-  set terminal postscript eps enhanced color size 5.4,3.6 font 'Times,18'
+  set terminal postscript eps enhanced color size 5.4,2.6 font 'Times,18'
 } else {
   set terminal png size 1680,1050
 }

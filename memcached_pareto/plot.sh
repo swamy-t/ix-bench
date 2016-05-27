@@ -58,9 +58,9 @@ filter pareto_back_linux_lines.out pareto_back_linux
 filter pareto_back_ix_lines.out    pareto_back_ix
 
 plot pareto_eff_linux  pareto-eff-linux.$FMT  1.60 2 110 0 'Power (W)' $DIR/plot_pareto_multicolor.gnuplot
-plot pareto_eff_ix     pareto-eff-ix.$FMT     4.50 8 110 1 '' $DIR/plot_pareto_multicolor.gnuplot
+plot pareto_eff_ix     pareto-eff-ix.$FMT     4.50 8 110 1 'Power (W)' $DIR/plot_pareto_multicolor.gnuplot
 plot pareto_back_linux pareto-back-linux.$FMT 1.60 2 100 0 '% of Peak for Best-effort Task' $DIR/plot_pareto_multicolor.gnuplot
-plot pareto_back_ix    pareto-back-ix.$FMT    4.50 8 100 0 '' $DIR/plot_pareto_multicolor.gnuplot
+plot pareto_back_ix    pareto-back-ix.$FMT    4.50 8 100 0 '% of Peak for Best-effort Task' $DIR/plot_pareto_multicolor.gnuplot
 
 gnuplot \
   -e dvfs_ix=\'pareto_core_dvfs_ix_dvfs.out\' \
@@ -69,7 +69,6 @@ gnuplot \
   -e outfile=\'pareto-core-dvfs-both.$FMT\' \
   -e pareto_ix=\'pareto_core_dvfs_ix_pareto.out\' \
   -e pareto_linux=\'pareto_core_dvfs_linux_pareto.out\' \
-  -e width='3.2' \
   -e xmax='8' \
   $DIR/plot_pareto_core_dvfs.gnuplot
 
