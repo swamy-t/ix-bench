@@ -27,13 +27,15 @@ def bench_linux(args, host1, host2):
       print '%d %f' % (pkt_size, msg_per_sec)
 
 def bench_ix(args, host1, host2):
-  bench_common.deploy(host1, [args.ix + '/dp/ix', args.ix + '/apps/echoserver'])
-  bench_common.deploy(host2, [args.ix + '/dp/ix', args.ix + '/apps/echoclient'])
+  bench_common.deploy(host1, [args.ix + '/ix_spdk/dp/ix'])
+  print args.ix
+  print host2.__dict__
+  bench_common.deploy(host2, [args.ix + '/ix/dp/ix', args.ix + '/ix/apps/echoclient'])
   for msg_size in IX_MSG_SIZES:
     result = 0
     try:
       with bench_common.ProcessManager() as proc_manager:
-        channel, pid = proc_manager.spawn(host1, 'sudo stdbuf -o0 -e0 %(DIR)s/ix -c /etc/ix.conf -- %(DIR)s/echoserver %(msg_size)d 2' % {'DIR' : DIR, 'msg_size': msg_size}, 'sudo kill {pid}')
+        channel, pid = proc_manager.spawn(host1, 'sudo stdbuf -o0 -e0 %(DIR)s/ix -c /etc/ix.conf %(msg_size)d 2' % {'DIR' : DIR, 'msg_size': msg_size}, 'sudo kill {pid}')
         time.sleep(IX_WAIT_TO_BOOT_SECS)
         bench_common.consume(channel)
         clients = bench_common.Clients(proc_manager, [host2], 'sudo %(DIR)s/ix -l 0 -c /etc/ix.conf -- %(DIR)s/echoclient %(host)s %(port)d %(msg_size)d' % {'DIR' : DIR, 'host': bench_common.get_host_ip(host1), 'port': IX_PORT, 'msg_size': msg_size}, 'sudo kill {pid}')
