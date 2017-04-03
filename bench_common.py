@@ -8,6 +8,8 @@ import threading
 import time
 import traceback
 import getpass
+import subprocess
+
 
 CLIENT_COMM_TIME_LIMIT = 0.005
 WARMUP = 0
@@ -23,6 +25,16 @@ def deploy(shell, files):
       shell.run(["mkdir", "-p", targetdir])
       sftp.put(file, dest)
       shell.run(shlex.split('chmod %o %s' % (os.stat(file).st_mode & 0777, dest)))
+
+def deploy_local(files):
+  for file in files:
+    targetdir='/tmp/'+getpass.getuser()
+    dest = os.path.join(targetdir, os.path.basename(file))
+    subprocess.call(["mkdir", "-p", targetdir])
+    subprocess.check_call(["cp", file, dest])
+    subprocess.check_call(shlex.split('chmod %o %s' % (os.stat(file).st_mode & 0777, dest)))
+    
+
 
 def get_host_ip(shell):
   ip = shell.run(shlex.split('grep host_addr /etc/ix.conf')).output
@@ -88,6 +100,50 @@ class Clients:
 
     return 1.0 * msgs / duration
 
+
+  def run_local(self):
+    self.channels = []
+    outfile = open('ix_client_output_' + str(time.time()), "w+")
+    self.outputs = [outfile]
+    subprocess.check_call(shlex.split(self.cmdline), stdout=outfile, stderr=outfile)
+    outfile.seek(0)
+
+    try:
+      return self.run_inner_local()
+    except Exception, e:
+      print >>sys.stderr, 'Exception in Clients: %r' % e
+      traceback.print_exc()
+      return 0
+
+  def run_inner_local(self):
+    for i in xrange(len(self.outputs)):
+      while True:
+        try:
+          line = self.outputs[i].readline()
+        except socket.timeout:
+          line = ''
+        if len(line) == 0 or line == 'ready\n':
+          break
+      if len(line) == 0:
+        self.proc_manager.killall()
+        for i in xrange(len(self.channels)):
+          print >>sys.stderr, '%s: stdout: %s' % (self.shells[i]._hostname, self.outputs[i].read())
+          print >>sys.stderr, '%s: stderr: %s' % (self.shells[i]._hostname, self.channels[i].makefile_stderr('rb').read())
+        raise ValueError('client failed')
+
+    before_lines, before_time = self.wait_and_sync(WARMUP)
+    after_lines, after_time = self.wait_and_sync(self.duration)
+
+    msgs = 0
+    for i in xrange(len(after_lines)):
+      msgs += int(after_lines[i].split()[1]) - int(before_lines[i].split()[1])
+
+    #NOTE: This won't be accurate because the file finishes writing before reading
+    duration = after_time - before_time
+
+    return 1.0 * msgs / duration
+
+  
   def wait_and_sync(self, wait):
     time.sleep(wait)
 
